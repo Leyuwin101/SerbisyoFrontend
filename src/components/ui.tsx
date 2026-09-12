@@ -1,4 +1,29 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
+
+/**
+ * Page container — the single source of truth for horizontal gutters.
+ * Wide → marketplace grids, standard → content pages, narrow → forms/auth.
+ */
+export function Container({
+  size = 'standard',
+  className = '',
+  children,
+}: {
+  size?: 'narrow' | 'standard' | 'wide' | 'full'
+  className?: string
+  children: ReactNode
+}): React.ReactElement {
+  const widths = {
+    narrow: 'max-w-2xl',
+    standard: 'max-w-6xl',
+    wide: 'max-w-7xl',
+    full: 'max-w-none',
+  } as const
+  return (
+    <div className={`mx-auto w-full px-4 sm:px-6 lg:px-8 ${widths[size]} ${className}`}>{children}</div>
+  )
+}
 
 export function Skeleton({ className = '' }: { className?: string }): React.ReactElement {
   return <div className={`skeleton ${className}`} aria-hidden="true" />
@@ -198,6 +223,122 @@ export function Input({
         </span>
       )}
     </div>
+  )
+}
+
+/** Consistent select field matching the Input styling. */
+export function Select({
+  label,
+  error,
+  hint,
+  children,
+  ...props
+}: React.SelectHTMLAttributes<HTMLSelectElement> & {
+  label?: string
+  error?: string
+  hint?: string
+  children: ReactNode
+}): React.ReactElement {
+  const id = props.id ?? props.name
+  return (
+    <div>
+      {label && (
+        <label htmlFor={id} className="mb-1.5 block text-sm font-semibold text-ink">
+          {label}
+        </label>
+      )}
+      <select
+        {...props}
+        id={id}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
+        className={`w-full rounded-sm border bg-surface px-3 py-2.5 text-sm text-ink outline-none transition-colors focus:border-bamboo ${
+          error ? 'border-red-400' : 'border-line'
+        }`}
+      >
+        {children}
+      </select>
+      {error && (
+        <span id={`${id}-error`} className="mt-1 block text-xs font-medium text-red-700">
+          {error}
+        </span>
+      )}
+      {!error && hint && (
+        <span id={`${id}-hint`} className="mt-1 block text-xs text-muted">
+          {hint}
+        </span>
+      )}
+    </div>
+  )
+}
+
+/** Shared toggle-chip (filter / category pill). */
+export function Chip({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean
+  onClick: () => void
+  children: ReactNode
+}): React.ReactElement {
+  return (
+    <button
+      onClick={onClick}
+      aria-pressed={selected}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] ${
+        selected
+          ? 'border-bamboo bg-bamboo text-white'
+          : 'border-line bg-surface text-muted hover:border-bamboo/40 hover:text-ink'
+      }`}
+    >
+      {children}
+    </button>
+  )
+}
+
+/** Standard page header: title, supporting description, right-aligned actions. */
+export function PageHeader({
+  title,
+  subtitle,
+  actions,
+  className = '',
+}: {
+  title: string
+  subtitle?: string
+  actions?: ReactNode
+  className?: string
+}): React.ReactElement {
+  return (
+    <header className={`flex flex-wrap items-end justify-between gap-4 ${className}`}>
+      <div>
+        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{title}</h1>
+        {subtitle && <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">{subtitle}</p>}
+      </div>
+      {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+    </header>
+  )
+}
+
+/** Button-styled link — the standard way to render a navigational CTA. */
+export function LinkButton({
+  to,
+  variant = 'primary',
+  children,
+  className = '',
+}: {
+  to: string
+  variant?: keyof typeof buttonVariants
+  children: ReactNode
+  className?: string
+}): React.ReactElement {
+  return (
+    <Link
+      to={to}
+      className={`inline-flex items-center justify-center gap-2 rounded-sm px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${buttonVariants[variant]} ${className}`}
+    >
+      {children}
+    </Link>
   )
 }
 

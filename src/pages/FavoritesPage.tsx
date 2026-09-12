@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Card, EmptyState, ErrorState, LoadingState, Stars } from '@/components/ui'
+import { Card, EmptyState, ErrorState, LinkButton, LoadingState, PageHeader, Stars } from '@/components/ui'
 import { favoriteApi } from '@/api'
 import { errorMessage } from '@/api/client'
 
@@ -16,10 +16,11 @@ export function FavoritesPage(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Favorites</h1>
-        <p className="mt-2 text-sm text-muted">Pros you trust, one tap away.</p>
-      </div>
+      <PageHeader
+        title="Favorites"
+        subtitle="Pros you trust, one tap away."
+        actions={<LinkButton to="/providers" variant="secondary">Find more pros</LinkButton>}
+      />
 
       {favorites.isLoading && <LoadingState rows={3} />}
       {favorites.isError && <ErrorState message={errorMessage(favorites.error)} onRetry={() => void favorites.refetch()} />}
@@ -27,14 +28,7 @@ export function FavoritesPage(): React.ReactElement {
         <EmptyState
           title="No favorites yet"
           hint="Tap the heart on a provider to keep them handy."
-          action={
-            <Link
-              to="/providers"
-              className="rounded-sm bg-bamboo px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-bamboo-deep"
-            >
-              Find a pro
-            </Link>
-          }
+          action={<LinkButton to="/providers">Find a pro</LinkButton>}
         />
       )}
 

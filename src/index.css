@@ -94,6 +94,15 @@ body {
 .reveal-d-2 { transition-delay: 140ms; }
 .reveal-d-3 { transition-delay: 210ms; }
 
+/* Hide scrollbars on horizontal category strips while keeping scroll. */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Skeleton shimmer matching the final layout rhythm. */
 @keyframes shimmer {
   from { background-position: 200% 0; }

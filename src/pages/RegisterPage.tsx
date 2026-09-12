@@ -40,11 +40,28 @@ export function RegisterPage(): React.ReactElement {
   }
 
   return (
-    <div className="mx-auto max-w-md pt-8">
+    <div className="mx-auto max-w-md pt-6 sm:pt-10">
       <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Join Serbisyo</h1>
       <p className="mt-2 text-sm text-muted">One account to book services or offer your own.</p>
-      <Card className="mt-6 p-6">
+      <Card className="mt-6 p-6 sm:p-8">
         <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
+          <fieldset>
+            <legend className="mb-2 block text-sm font-semibold text-ink">I want to…</legend>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <RoleOption
+                selected={role === 'CUSTOMER'}
+                onSelect={() => setRole('CUSTOMER')}
+                title="Get services"
+                detail="Book verified pros near me."
+              />
+              <RoleOption
+                selected={role === 'PROVIDER'}
+                onSelect={() => setRole('PROVIDER')}
+                title="Offer services"
+                detail="List my work and get booked."
+              />
+            </div>
+          </fieldset>
           <Input
             label="Email"
             name="email"
@@ -84,21 +101,6 @@ export function RegisterPage(): React.ReactElement {
             value={form.confirm}
             onChange={(e) => update('confirm', e.target.value)}
           />
-          <fieldset className="grid gap-2 sm:grid-cols-2">
-            <legend className="sr-only">Account type</legend>
-            <RoleOption
-              selected={role === 'CUSTOMER'}
-              onSelect={() => setRole('CUSTOMER')}
-              title="I need services"
-              detail="Book verified pros near me."
-            />
-            <RoleOption
-              selected={role === 'PROVIDER'}
-              onSelect={() => setRole('PROVIDER')}
-              title="I provide services"
-              detail="Offer my work and get booked."
-            />
-          </fieldset>
           {(localError !== null || serverError !== null) && (
             <p role="alert" className="rounded-sm bg-red-50 px-3 py-2 text-sm font-medium text-red-800">
               {localError ?? serverError}

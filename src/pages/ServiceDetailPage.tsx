@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { ArrowRight, ShieldCheck } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Badge, Button, Card, ErrorState, Input, LoadingState, Textarea } from '@/components/ui'
+import { Badge, Button, Card, ErrorState, Input, LinkButton, LoadingState, Textarea } from '@/components/ui'
 import { addressApi, bookingApi, serviceApi } from '@/api'
 import { errorMessage } from '@/api/client'
 import type { CreateAddressBody } from '@/api'
@@ -92,54 +93,73 @@ export function ServiceDetailPage(): React.ReactElement {
   }
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <div>
-        <p className="text-xs font-semibold uppercase tracking-widest text-bamboo">Service</p>
-        <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink">{s.name}</h1>
-        {s.description && <p className="mt-2 text-sm text-muted">{s.description}</p>}
-        <div className="mt-3 flex items-center gap-3">
-          <span className="font-display text-2xl font-semibold text-ink">{formatPrice(s.basePrice)}</span>
-          <Badge>{s.pricingType.toLowerCase()}</Badge>
-          {s.durationMinutes != null && <span className="text-sm text-muted">~{s.durationMinutes} min</span>}
+    /* Fiverr-style two-column layout: the buyer reads on the left, the sticky
+       booking panel stays pinned on the right while they scroll. */
+    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-10">
+      {/* Left column — what the buyer is evaluating. */}
+      <div className="space-y-6">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-widest text-bamboo">Service</p>
+          <h1 className="mt-1 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">{s.name}</h1>
+          {s.description && <p className="mt-3 max-w-prose leading-relaxed text-muted">{s.description}</p>}
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <span className="font-display text-2xl font-semibold text-ink">{formatPrice(s.basePrice)}</span>
+            <Badge>{s.pricingType.toLowerCase()}</Badge>
+            {s.durationMinutes != null && <span className="text-sm text-muted">~{s.durationMinutes} min</span>}
+          </div>
         </div>
+
+        <Card className="p-5">
+          <p className="text-xs font-semibold uppercase tracking-widest text-muted">Booking with Serbisyo</p>
+          <ul className="mt-3 space-y-2 text-sm leading-relaxed text-muted">
+            <li className="flex items-center gap-2">
+              <ShieldCheck size={15} className="shrink-0 text-bamboo" aria-hidden="true" />
+              The server prices every booking — the estimate here is informational.
+            </li>
+            <li className="flex items-center gap-2">
+              <ShieldCheck size={15} className="shrink-0 text-bamboo" aria-hidden="true" />
+              Reviews come only from real, completed bookings.
+            </li>
+          </ul>
+          <Link
+            to={`/providers/${s.providerId}`}
+            className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-bamboo hover:underline"
+          >
+            View the provider's profile <ArrowRight size={14} aria-hidden="true" />
+          </Link>
+          {s.durationMinutes != null && (
+            <p className="mt-3 text-sm text-muted">Typical duration: about {s.durationMinutes} minutes.</p>
+          )}
+        </Card>
       </div>
 
-      <ol className="flex items-center gap-2 text-xs font-semibold" aria-label="Booking progress">
-        {(['schedule', 'address', 'review'] as const).map((label, i) => {
-          const currentIndex = ['schedule', 'address', 'review'].indexOf(step)
-          return (
-            <li key={label} className="flex items-center gap-2">
-              <span
-                className={`rounded-full px-2.5 py-1 ${
-                  i <= currentIndex ? 'bg-bamboo text-white' : 'border border-line bg-surface text-muted'
-                }`}
-              >
-                {i + 1}. {label}
-              </span>
-              {i < 2 && <span aria-hidden="true" className="text-muted">→</span>}
-            </li>
-          )
-        })}
-      </ol>
-
-      <Card className="p-6">
+      {/* Right column — sticky booking panel. */}
+      <aside className="self-start lg:sticky lg:top-24">
+        <Card className="p-6">
+          <ol className="mb-5 flex flex-wrap items-center gap-2 text-xs font-semibold" aria-label="Booking progress">
+            {(['schedule', 'address', 'review'] as const).map((label, i) => {
+              const currentIndex = ['schedule', 'address', 'review'].indexOf(step)
+              return (
+                <li key={label} className="flex items-center gap-2">
+                  <span
+                    className={`rounded-full px-2.5 py-1 ${
+                      i <= currentIndex ? 'bg-bamboo text-white' : 'border border-line bg-surface text-muted'
+                    }`}
+                  >
+                    {i + 1}. {label}
+                  </span>
+                  {i < 2 && <span aria-hidden="true" className="text-muted">→</span>}
+                </li>
+              )
+            })}
+          </ol>
         {!isAuthenticated && (
           <div className="space-y-3">
             <h2 className="font-display text-lg font-semibold text-ink">Sign in to book</h2>
             <p className="text-sm text-muted">Create a free account to pick a schedule and confirm this booking.</p>
             <div className="flex flex-wrap gap-2">
-              <Link
-                to="/login"
-                className="rounded-sm bg-bamboo px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-bamboo-deep"
-              >
-                Sign in
-              </Link>
-              <Link
-                to="/register"
-                className="rounded-sm border border-line bg-surface px-4 py-2.5 text-sm font-semibold text-ink transition-colors hover:border-bamboo/40"
-              >
-                Create an account
-              </Link>
+              <LinkButton to="/login">Sign in</LinkButton>
+              <LinkButton to="/register" variant="secondary">Create an account</LinkButton>
             </div>
           </div>
         )}
@@ -250,14 +270,8 @@ export function ServiceDetailPage(): React.ReactElement {
             {formError}
           </p>
         )}
-      </Card>
-
-      <p className="text-center text-sm text-muted">
-        Prefer to talk first?{' '}
-        <Link to={`/providers/${s.providerId}`} className="font-semibold text-bamboo hover:underline">
-          View the provider's profile
-        </Link>
-      </p>
+        </Card>
+      </aside>
     </div>
   )
 }

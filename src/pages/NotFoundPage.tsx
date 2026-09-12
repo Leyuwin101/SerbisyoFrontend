@@ -1,13 +1,23 @@
-import { Link } from 'react-router-dom'
+import { LinkButton } from '@/components/ui'
 
 export function NotFoundPage(): React.ReactElement {
   return (
-    <div className="py-20 text-center">
-      <h1 className="text-4xl font-bold text-slate-800">404</h1>
-      <p className="mt-2 text-slate-600">The page you were looking for does not exist.</p>
-      <Link to="/" className="mt-4 inline-block font-medium text-indigo-600 hover:underline">
-        Go home
-      </Link>
+    <div className="py-24 text-center">
+      <p aria-hidden="true" className="font-display text-6xl font-semibold tracking-tight text-bamboo/20 sm:text-7xl">
+        404
+      </p>
+      <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight text-ink">
+        We couldn't find that page
+      </h1>
+      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-muted">
+        The link may be broken, or the page may have moved. Everything you need is one click away.
+      </p>
+      <div className="mt-6 flex justify-center gap-3">
+        <LinkButton to="/">Go home</LinkButton>
+        <LinkButton to="/services" variant="secondary">
+          Browse services
+        </LinkButton>
+      </div>
     </div>
   )
 }

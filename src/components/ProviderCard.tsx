@@ -1,15 +1,16 @@
 import { Link } from 'react-router-dom'
 import { ShieldCheck } from 'lucide-react'
 import { Card, Stars } from '@/components/ui'
+import { avatarUrl } from '@/api'
 import type { ProviderSummary } from '@/types'
 
-/** Stable tint per provider so every card gets a unique, deterministic accent. */
+/** Stable flat tint per provider so every card gets a unique, deterministic accent. */
 const TINTS = [
-  'from-bamboo-soft to-gold-soft text-bamboo-deep',
-  'from-gold-soft to-[#e9e2f3] text-[#8a5a10]',
-  'from-[#e9e2f3] to-bamboo-soft text-[#4c3a78]',
-  'from-[#fdeae0] to-gold-soft text-[#8a3c10]',
-  'from-[#dff0ea] to-[#f3f0da] text-bamboo-deep',
+  'bg-bamboo-soft text-bamboo-deep',
+  'bg-gold-soft text-[#8a5a10]',
+  'bg-[#e9e2f3] text-[#4c3a78]',
+  'bg-[#fdeae0] text-[#8a3c10]',
+  'bg-[#dff0ea] text-bamboo-deep',
 ] as const
 
 function tint(id: number): string {
@@ -40,13 +41,21 @@ export function ProviderCard({ provider }: { provider: ProviderSummary }): React
       aria-label={`View ${provider.businessName}`}
     >
       <Card className="card-lift h-full overflow-hidden group-hover:border-bamboo/30">
-        {/* Banner with monogram */}
+        {/* Banner: real photo when the seller has one, monogram otherwise. */}
         <div
-          className={`flex h-20 items-end justify-between bg-linear-to-br px-4 pb-0 ${tint(provider.id)}`}
+          className={`flex h-20 items-end justify-between px-4 pb-0 ${tint(provider.id)}`}
           aria-hidden="true"
         >
-          <span className="flex size-14 translate-y-3 items-center justify-center rounded-t-lg bg-surface font-display text-lg font-semibold shadow-sm transition-transform duration-500 ease-serbisyo group-hover:scale-[1.06]">
-            {initials(provider.businessName) || 'S'}
+          <span className="flex size-14 translate-y-3 items-center justify-center overflow-hidden rounded-t-lg bg-surface shadow-sm transition-transform duration-500 ease-serbisyo group-hover:scale-[1.06]">
+            {provider.avatarUrl ? (
+              <img
+                src={avatarUrl(provider.avatarUrl) ?? ''}
+                alt=""
+                className="size-full object-cover"
+              />
+            ) : (
+              <span className="font-display text-lg font-semibold">{initials(provider.businessName) || 'S'}</span>
+            )}
           </span>
           {verified && (
             <span className="mb-2 flex items-center gap-1 rounded-full bg-surface/80 px-2 py-0.5 text-[11px] font-semibold">

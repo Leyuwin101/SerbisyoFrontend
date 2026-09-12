@@ -20,6 +20,22 @@ export interface UserSummary {
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
   /** Role lives in the JWT claims; the summary DTO may omit it. */
   role?: Role
+  /** Flattened from the role profile by the auth layer for display. */
+  displayName?: string | null
+  avatarUrl?: string | null
+}
+
+export interface CustomerProfileSummary {
+  id: number
+  userId: number
+  displayName: string
+  avatarUrl: string | null
+}
+
+export interface MyProfile {
+  user: UserSummary
+  customer: CustomerProfileSummary | null
+  provider: ProviderSummary | null
 }
 
 export interface AuthResponse {
@@ -69,6 +85,7 @@ export interface ProviderSummary {
   verificationStatus: string | null
   averageRating: number | null
   reviewCount: number | null
+  avatarUrl?: string | null
 }
 
 export interface ServiceSummary {

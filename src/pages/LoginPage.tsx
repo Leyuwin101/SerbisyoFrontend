@@ -30,10 +30,10 @@ export function LoginPage(): React.ReactElement {
   }
 
   return (
-    <div className="mx-auto max-w-md pt-8">
+    <div className="mx-auto max-w-md pt-6 sm:pt-10">
       <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Welcome back</h1>
       <p className="mt-2 text-sm text-muted">Sign in to book a pro or manage your services.</p>
-      <Card className="mt-6 p-6">
+      <Card className="mt-6 p-6 sm:p-8">
         <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
           <Input
             label="Email"

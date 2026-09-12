@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { Card, EmptyState, ErrorState, ProviderCardSkeleton } from '@/components/ui'
+import { Chip, EmptyState, ErrorState, PageHeader, ProviderCardSkeleton } from '@/components/ui'
 import { useCategories, useServiceBrowse, useServiceSearch, useServicesByCategory } from '@/hooks/useQueries'
 import { errorMessage } from '@/api/client'
 import { formatPrice } from '@/utils/format'
@@ -24,6 +24,7 @@ export function ServicesPage(): React.ReactElement {
   const searching = query !== null && query.trim().length > 0
   const active = searching ? search : categoryId !== null ? byCategory : browse
   const services = active.data?.content ?? []
+  const totalResults = active.data?.page.totalElements ?? services.length
 
   const clearSearch = (): void => {
     const next = new URLSearchParams(searchParams)
@@ -33,22 +34,29 @@ export function ServicesPage(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">
-          {searching ? `Results for “${query}”` : 'Explore services'}
-        </h1>
-        <p className="mt-2 text-sm text-muted">
-          {searching ? 'Matching services from verified pros across Serbisyo.' : 'Everyday pros, transparent pricing, booked in minutes.'}
+      <PageHeader
+        title={searching ? `Results for “${query}”` : 'Explore services'}
+        subtitle={
+          searching
+            ? 'Matching services from verified pros across Serbisyo.'
+            : 'Everyday pros, transparent pricing, booked in minutes.'
+        }
+        actions={
+          searching ? (
+            <button
+              onClick={clearSearch}
+              className="rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-semibold text-bamboo transition-colors duration-300 hover:border-bamboo/40"
+            >
+              Clear search
+            </button>
+          ) : undefined
+        }
+      />
+      {!active.isLoading && !active.isError && (
+        <p aria-live="polite" className="-mt-2 text-sm text-muted">
+          {totalResults} {totalResults === 1 ? 'service' : 'services'}
         </p>
-        {searching && (
-          <button
-            onClick={clearSearch}
-            className="mt-3 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm font-semibold text-bamboo transition-colors duration-300 hover:border-bamboo/40"
-          >
-            Clear search
-          </button>
-        )}
-      </div>
+      )}
 
       {!searching && (
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by category">
@@ -80,17 +88,23 @@ export function ServicesPage(): React.ReactElement {
       <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {services.map((s) => (
           <li key={s.id}>
-            <Link to={`/services/${s.id}`} className="group block h-full">
-              <Card className="flex h-full flex-col p-5 transition-all duration-200 group-hover:-translate-y-1 group-hover:border-bamboo/40 group-hover:shadow-lg group-hover:shadow-bamboo/5">
-                <p className="font-semibold text-ink">{s.name}</p>
-                {s.description && <p className="mt-1 line-clamp-2 text-sm text-muted">{s.description}</p>}
-                <div className="mt-auto flex items-center justify-between border-t border-line pt-3">
-                  <span className="font-display text-lg font-semibold text-ink">{formatPrice(s.basePrice)}</span>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-                    {s.pricingType.toLowerCase()}
-                  </span>
-                </div>
-              </Card>
+            <Link
+              to={`/services/${s.id}`}
+              className="group block h-full rounded-lg border border-line bg-surface p-5 transition-all duration-300 ease-serbisyo hover:-translate-y-1 hover:border-bamboo/40 hover:shadow-lg hover:shadow-bamboo/5 focus-visible:outline-offset-4"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-semibold text-ink transition-colors group-hover:text-bamboo-deep">{s.name}</p>
+                {s.durationMinutes != null && (
+                  <span className="shrink-0 text-xs font-medium text-muted">~{s.durationMinutes} min</span>
+                )}
+              </div>
+              {s.description && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-muted">{s.description}</p>}
+              <div className="mt-4 flex items-end justify-between border-t border-line pt-3">
+                <span className="font-display text-lg font-semibold text-ink">{formatPrice(s.basePrice)}</span>
+                <span className="rounded-full bg-bamboo-soft px-2 py-0.5 text-xs font-semibold text-bamboo-deep">
+                  {s.pricingType.toLowerCase()}
+                </span>
+              </div>
             </Link>
           </li>
         ))}
@@ -99,24 +113,3 @@ export function ServicesPage(): React.ReactElement {
   )
 }
 
-export function Chip({
-  selected,
-  onClick,
-  children,
-}: {
-  selected: boolean
-  onClick: () => void
-  children: React.ReactNode
-}): React.ReactElement {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={selected}
-      className={`rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-colors ${
-        selected ? 'border-bamboo bg-bamboo text-white' : 'border-line bg-surface text-muted hover:border-bamboo/40'
-      }`}
-    >
-      {children}
-    </button>
-  )
-}

@@ -201,6 +201,18 @@ export function useAddresses(enabled: boolean) {
   })
 }
 
+// ---------- profile ----------
+// Own provider profile — long stale time; invalidated after an edit.
+export function useMyProviderProfile(enabled: boolean) {
+  return useQuery({
+    queryKey: ['providers', 'me'],
+    queryFn: providerApi.me,
+    enabled,
+    staleTime: 5 * 60 * 1000,
+    retry: 0,
+  })
+}
+
 // ---------- single service ----------
 export function useService(id: number | null) {
   return useQuery({

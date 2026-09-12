@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button, Card, EmptyState, ErrorState, Input, LoadingState } from '@/components/ui'
+import { Button, Card, EmptyState, ErrorState, Input, LoadingState, PageHeader } from '@/components/ui'
 import { conversationApi } from '@/api'
 import { errorMessage } from '@/api/client'
 import { useAuth } from '@/hooks/useAuth'
@@ -66,10 +66,10 @@ export function MessagesPage(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Messages</h1>
-        <p className="mt-2 text-sm text-muted">Chat with your pros before and after a booking.</p>
-      </div>
+      <PageHeader
+        title="Messages"
+        subtitle="Chat with your pros before and after a booking."
+      />
 
       {conversations.isLoading && <LoadingState rows={2} />}
       {conversations.isError && <ErrorState message={errorMessage(conversations.error)} onRetry={() => void conversations.refetch()} />}
@@ -89,7 +89,7 @@ export function MessagesPage(): React.ReactElement {
                 <button
                   onClick={() => setActiveId(c.id)}
                   className={`w-full rounded-sm border p-4 text-left transition-colors ${
-                    activeId === c.id ? 'border-bamboo bg-bamboo-50' : 'border-line bg-white hover:bg-bamboo-50'
+                    activeId === c.id ? 'border-bamboo bg-bamboo-soft' : 'border-line bg-surface hover:bg-bamboo-soft/60'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -109,7 +109,19 @@ export function MessagesPage(): React.ReactElement {
             ))}
           </ul>
 
-          {activeId != null && <Thread conversationId={activeId} thread={thread.data} isLoading={thread.isLoading} error={thread.isError ? errorMessage(thread.error) : null} onRetry={() => void thread.refetch()} />}
+          {activeId != null ? (
+            <Thread
+              conversationId={activeId}
+              thread={thread.data}
+              isLoading={thread.isLoading}
+              error={thread.isError ? errorMessage(thread.error) : null}
+              onRetry={() => void thread.refetch()}
+            />
+          ) : (
+            <div className="hidden items-center justify-center rounded-sm border border-dashed border-line lg:flex">
+              <p className="text-sm text-muted">Select a conversation to start chatting.</p>
+            </div>
+          )}
         </div>
       )}
     </div>
@@ -161,11 +173,11 @@ function Thread({
           <div key={m.id} className={`flex ${m.senderId === user?.id ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-[70%] rounded-sm px-3 py-2 text-sm ${
-                m.senderId === user?.id ? 'bg-bamboo text-white' : 'bg-cloud text-ink'
+                m.senderId === user?.id ? 'bg-bamboo text-white' : 'bg-paper text-ink'
               }`}
             >
               <p className="whitespace-pre-wrap">{m.content}</p>
-              <p className={`mt-1 text-xs ${m.senderId === user?.id ? 'text-bamboo-100' : 'text-muted'}`}>
+              <p className={`mt-1 text-xs ${m.senderId === user?.id ? 'text-bamboo-soft/70' : 'text-muted'}`}>
                 {new Date(m.createdAt).toLocaleTimeString()}
               </p>
             </div>

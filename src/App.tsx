@@ -14,6 +14,7 @@ import { AddressesPage } from '@/pages/AddressesPage'
 import { FavoritesPage } from '@/pages/FavoritesPage'
 import { MessagesPage } from '@/pages/MessagesPage'
 import { NotificationsPage } from '@/pages/NotificationsPage'
+import { ProfilePage } from '@/pages/ProfilePage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 
 // Route-level code splitting for pages a visitor only opens on demand.
@@ -61,6 +62,7 @@ export default function App(): React.ReactElement {
               <Route path="login" element={<LoginPage />} />
               <Route path="register" element={<RegisterPage />} />
               <Route element={<RequireAuth />}>
+                <Route path="profile" element={<ProfilePage />} />
                 <Route path="bookings" element={<BookingsPage />} />
                 <Route path="notifications" element={<NotificationsPage />} />
                 <Route path="addresses" element={<AddressesPage />} />

@@ -64,7 +64,7 @@ export function HomePage(): React.ReactElement {
             </div>
             <button
               type="submit"
-              className="rounded-full bg-bamboo px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-bamboo-deep active:scale-[0.97]"
+              className="shrink-0 rounded-full bg-bamboo px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-bamboo-deep active:scale-[0.97] sm:px-6"
             >
               Search
             </button>

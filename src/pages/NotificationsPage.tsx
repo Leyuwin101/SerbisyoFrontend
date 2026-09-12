@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { Card, EmptyState, ErrorState, LoadingState } from '@/components/ui'
+import { Button, Card, EmptyState, ErrorState, LoadingState, PageHeader } from '@/components/ui'
 import { notificationApi } from '@/api'
 import { errorMessage } from '@/api/client'
 import { useInvalidateHelpers, useNotifications } from '@/hooks/useQueries'
@@ -22,16 +22,15 @@ export function NotificationsPage(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Notifications</h1>
-        <button
-          onClick={() => markAll.mutate()}
-          disabled={markAll.isPending}
-          className="rounded-sm border border-line bg-surface px-3 py-2 text-sm font-semibold text-ink transition-colors hover:border-bamboo/40 disabled:opacity-50"
-        >
-          {markAll.isPending ? 'Marking…' : 'Mark all as read'}
-        </button>
-      </div>
+      <PageHeader
+        title="Notifications"
+        subtitle="Booking updates, messages and account activity."
+        actions={
+          <Button variant="secondary" onClick={() => markAll.mutate()} disabled={markAll.isPending}>
+            {markAll.isPending ? 'Marking…' : 'Mark all as read'}
+          </Button>
+        }
+      />
 
       {isLoading && <LoadingState rows={3} />}
       {isError && <ErrorState message={errorMessage(error)} onRetry={() => void refetch()} />}

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button, Card, EmptyState, ErrorState, Input, LoadingState } from '@/components/ui'
+import { Button, Card, EmptyState, ErrorState, Input, LoadingState, PageHeader } from '@/components/ui'
 import { addressApi } from '@/api'
 import { errorMessage } from '@/api/client'
 import type { CreateAddressBody } from '@/api'
@@ -19,13 +19,13 @@ export function AddressesPage(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-ink">Addresses</h1>
-          <p className="mt-2 text-sm text-muted">Where your pros will show up.</p>
-        </div>
-        <Button onClick={() => setShowForm((open) => !open)}>{showForm ? 'Close' : '+ Add address'}</Button>
-      </div>
+      <PageHeader
+        title="Addresses"
+        subtitle="Where your pros will show up."
+        actions={
+          <Button onClick={() => setShowForm((open) => !open)}>{showForm ? 'Close' : '+ Add address'}</Button>
+        }
+      />
 
       {showForm && (
         <Card className="p-6">

@@ -1,6 +1,6 @@
 import { useSearchParams } from 'react-router-dom'
 import { ShieldCheck } from 'lucide-react'
-import { EmptyState, ErrorState, ProviderCardSkeleton } from '@/components/ui'
+import { Chip, EmptyState, ErrorState, PageHeader, ProviderCardSkeleton } from '@/components/ui'
 import { ProviderCard } from '@/components/ProviderCard'
 import { useCategories, useProviderSearch } from '@/hooks/useQueries'
 
@@ -46,40 +46,42 @@ export function ProvidersPage(): React.ReactElement {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
-          Find a pro near you
-        </h1>
-        <p className="mt-2 max-w-lg text-sm text-muted">
-          Compare verified providers by rating, price and distance. Every review comes from a
-          completed booking.
+      <PageHeader
+        title="Find a pro near you"
+        subtitle="Compare verified providers by rating, price and distance. Every review comes from a completed booking."
+      />
+
+      {!isLoading && !isError && (
+        <p aria-live="polite" className="-mt-2 text-sm text-muted">
+          {(data?.page.totalElements ?? data?.content.length ?? 0)}{' '}
+          {(data?.page.totalElements ?? 0) === 1 ? 'provider' : 'providers'}
         </p>
-      </header>
+      )}
 
       {/* Filter bar: chips + sort, no heavy sidebar. */}
       <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Filters">
-        <FilterChip active={verifiedOnly} onClick={() => update({ verifiedOnly: verifiedOnly ? null : 'true' })}>
+        <Chip selected={verifiedOnly} onClick={() => update({ verifiedOnly: verifiedOnly ? null : 'true' })}>
           <ShieldCheck size={14} className="shrink-0" aria-hidden="true" /> Verified only
-        </FilterChip>
+        </Chip>
         {[4, 4.5].map((r) => (
-          <FilterChip
+          <Chip
             key={r}
-            active={minRating === String(r)}
+            selected={minRating === String(r)}
             onClick={() => update({ minRating: minRating === String(r) ? null : String(r) })}
           >
             ★ {r}+
-          </FilterChip>
+          </Chip>
         ))}
         {categories?.content.map((category) => (
-          <FilterChip
+          <Chip
             key={category.id}
-            active={categoryId === String(category.id)}
+            selected={categoryId === String(category.id)}
             onClick={() =>
               update({ categoryId: categoryId === String(category.id) ? null : String(category.id) })
             }
           >
             {category.name}
-          </FilterChip>
+          </Chip>
         ))}
         <label className="ml-auto flex items-center gap-2 text-sm text-muted">
           <span>Sort</span>
@@ -112,7 +114,7 @@ export function ProvidersPage(): React.ReactElement {
           action={
             <button
               onClick={() => setSearchParams(new URLSearchParams(), { replace: true })}
-              className="rounded-sm bg-bamboo px-4 py-2 text-sm font-semibold text-white hover:bg-bamboo-deep"
+              className="rounded-sm bg-bamboo px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-bamboo-deep"
             >
               Clear filters
             </button>
@@ -148,30 +150,6 @@ export function ProvidersPage(): React.ReactElement {
         </nav>
       )}
     </div>
-  )
-}
-
-function FilterChip({
-  active,
-  onClick,
-  children,
-}: {
-  active: boolean
-  onClick: () => void
-  children: React.ReactNode
-}): React.ReactElement {
-  return (
-    <button
-      onClick={onClick}
-      aria-pressed={active}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-sm font-semibold transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] active:scale-[0.97] ${
-        active
-          ? 'border-bamboo bg-bamboo text-white'
-          : 'border-line bg-surface text-muted hover:border-bamboo/40 hover:text-ink'
-      }`}
-    >
-      {children}
-    </button>
   )
 }
 

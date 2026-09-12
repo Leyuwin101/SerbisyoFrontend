@@ -19,6 +19,8 @@ import type {
   ReviewSummary,
   ServiceCategory,
   ServiceSummary,
+  UserSummary,
+  MyProfile,
 } from '@/types'
 import type { AxiosResponse } from 'axios'
 
@@ -56,6 +58,35 @@ export function normalisePage<T>(data: unknown): PageResponse<T> {
 }
 
 export const unwrap = <T>(response: AxiosResponse<T>): T => response.data
+
+// ---------- self-service profile ----------
+export const userApi = {
+  me: () => api.get<UserSummary>('/users/me').then(unwrap),
+  update: (body: { email?: string; phone?: string }) =>
+    api.patch<{ user: UserSummary }>('/users/me', body).then((r) => r.data.user),
+  /** One-shot hydration: account + role profile(s) in a single request. */
+  myProfile: () => api.get<MyProfile>('/users/me/profile').then(unwrap),
+  /** Update the customer profile (display name). Returns the updated profile. */
+  updateCustomerProfile: (body: { displayName?: string }) =>
+    api
+      .put<{ customer: { id: number; userId: number; displayName: string; avatarUrl: string | null } }>(
+        '/users/me/customer-profile',
+        body,
+      )
+      .then((r) => r.data.customer),
+  /** Upload a profile photo; attaches to the customer or provider profile. */
+  uploadAvatar: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return api.post('/users/me/avatar', form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+}
+
+/** Public URL for an avatar storage key. */
+export const avatarUrl = (key: string | null | undefined): string | null =>
+  key ? `/api/v1/files/${key}` : null
 
 // ---------- auth ----------
 export const authApi = {
@@ -111,6 +142,10 @@ export const providerApi = {
       .then((r) => normalisePage<ProviderSummary>(r.data)),
   get: (id: number) => api.get<ProviderSummary>(`/providers/${id}`).then(unwrap),
   me: () => api.get<ProviderSummary>('/providers/me').then(unwrap),
+  updateProfile: (body: { businessName?: string; bio?: string }) =>
+    api
+      .put<{ provider: ProviderSummary }>('/providers/me', body)
+      .then((r) => r.data.provider),
 }
 
 // ---------- notifications ----------
