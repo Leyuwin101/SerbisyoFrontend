@@ -1,0 +1,131 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+/*
+  Serbisyo design system.
+  Identity: warm paper, deep bamboo green, calamansi gold.
+  Display type: Fraunces (human, editorial). UI type: Plus Jakarta Sans.
+*/
+@theme {
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+  --color-paper: #f6f4ef;
+  --color-surface: #ffffff;
+  --color-ink: #1a201c;
+  --color-muted: #5c6b63;
+  --color-line: #e4e0d6;
+  --color-bamboo: #17493b;
+  --color-bamboo-deep: #0f372c;
+  --color-bamboo-soft: #e7efe9;
+  --color-gold: #e8a13d;
+  --color-gold-soft: #faf0dc;
+}
+
+/* Shared spring-like motion curve — everything transitions on this, never linear. */
+@theme {
+  --ease-serbisyo: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Visible, consistent keyboard focus everywhere. */
+:focus-visible {
+  outline: 2px solid var(--color-bamboo);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.55s cubic-bezier(0.25, 1, 0.5, 1) both;
+}
+.rise-in-1 { animation-delay: 60ms; }
+.rise-in-2 { animation-delay: 140ms; }
+.rise-in-3 { animation-delay: 220ms; }
+
+/*
+  Scroll-reveal: hidden state is opt-in via JS (useReveal adds .reveal),
+  so content stays visible without JavaScript. Once revealed, it stays.
+*/
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+}
+.reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-d-1 { transition-delay: 70ms; }
+.reveal-d-2 { transition-delay: 140ms; }
+.reveal-d-3 { transition-delay: 210ms; }
+
+/* Skeleton shimmer matching the final layout rhythm. */
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+.skeleton {
+  border-radius: 0.5rem;
+  background: linear-gradient(90deg, #ece9e1 25%, #f4f2ec 50%, #ece9e1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Soft ambient card shadow (diffused, warm-tinted — never a flat grey drop). */
+.card-lift {
+  transition:
+    transform 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+    box-shadow 0.5s cubic-bezier(0.32, 0.72, 0, 1),
+    border-color 0.3s ease;
+  will-change: transform;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px -12px rgba(23, 73, 59, 0.18);
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-lift:hover {
+    transform: none;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
